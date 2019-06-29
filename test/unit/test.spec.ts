@@ -1,4 +1,5 @@
 import { Transaction } from '../../src/models/transaction';
+import { Account, CryptoKeys, KeyPair } from '../../src/models/account';
 //console.log = jest.fn();
 
 describe('', () => {
@@ -32,6 +33,29 @@ describe('', () => {
         });
     });
     describe('トランザクションを配布', () => {
+        describe('アカウント管理', () => {
+            it('自分のアカウント作成', () => {
+                let myAccount = new Account();
+                expect(myAccount instanceof Account).toEqual(true);
+            });
+            it('公開鍵暗号/楕円曲線暗号/secp256k1のペア生成', () => {
+                let myKeyPair = new KeyPair();
+                const generatedKeys: CryptoKeys = myKeyPair.generateKeys();
+                const gotKeys: CryptoKeys = myKeyPair.getKeys();
+                expect(generatedKeys).toEqual(gotKeys);
+            });
+            it('自分のアカウントのアドレスを生成・取得', () => {
+                let myAccount = new Account();
+                expect(myAccount instanceof Account).toEqual(true);
+                expect(typeof myAccount.getAddress()).toEqual('string');
+            });
+            it('自分のアカウントのアドレスを設定', () => {
+                const myKeyPair = new KeyPair();
+                let myAccount = new Account(myKeyPair);
+                expect(myAccount instanceof Account).toEqual(true);
+                expect(myAccount.getAddress()).toEqual(myAccount.convertToAddressFromKeyPair(myKeyPair));
+            });
+        });
     });
     xit('マイニング', () => {
     });
