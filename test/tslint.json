@@ -1,0 +1,14 @@
+{
+  "extends": "../tslint.json",
+  "rules": {
+    "no-require-imports": false,
+    "no-var-requires": false,
+    "no-unused-expression": false,
+    "no-null-keyword": false,
+    "max-line-length": false,
+    "no-duplicate-string": false,
+    "no-big-function": false,
+    "no-identical-functions": false,
+    "no-implicit-dependencies": false
+  }
+}

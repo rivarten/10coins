@@ -1,0 +1,85 @@
+{
+  "name": "10coins",
+  "version": "1.0.0",
+  "description": "ore ore bitcoin",
+  "main": "dist/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "npm run clean && ./node_modules/.bin/tsc && npm run prettier",
+    "lint:ts": "tslint --project tsconfig.json --config tslint.json",
+    "lint:ts:fix": "tslint --project tsconfig.json --config tslint.json --fix",
+    "clean": "rimraf dist/*",
+    "prettier": "prettier --write '*.js' './test/**/*.js'",
+    "test:ts": "ts-jest",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rivarten/10coins.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rivarten/10coins/issues"
+  },
+  "homepage": "https://github.com/rivarten/10coins#readme",
+  "jest": {
+    "verbose": true,
+    "setupFiles": [
+      "<rootDir>/test/jestSetup.js"
+    ],
+    "testURL": "http://localhost/",
+    "coverageDirectory": "./coverage",
+    "coverageReporters": [
+      "json",
+      "lcov",
+      "text"
+    ],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/jestSetup.js"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.json"
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "testMatch": [
+      "**/test/**/*.spec.(ts|js)"
+    ],
+    "testPathIgnorePatterns": [
+      "/test/__orig__/.*"
+    ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testEnvironment": "node"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.13",
+    "@types/node": "^10.12.18",
+    "@types/shelljs": "^0.8.1",
+    "jest": "^24.0.0",
+    "prettier": "^1.16.1",
+    "rimraf": "^2.6.3",
+    "shelljs": "^0.8.3",
+    "ts-jest": "^23.10.5",
+    "ts-node": "^8.0.1",
+    "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.17.0",
+    "tslint-eslint-rules": "^5.4.0",
+    "tslint-no-circular-imports": "^0.6.1",
+    "tslint-plugin-prettier": "^2.0.1",
+    "tslint-sonarts": "^1.9.0",
+    "typescript": "^3.2.4"
+  },
+  "dependencies": {
+    "moment": "^2.24.0"
+  }
+}
