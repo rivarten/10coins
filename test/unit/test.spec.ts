@@ -1,5 +1,6 @@
 import { Transaction } from '../../src/models/transaction';
 import { Account, CryptoKeys, KeyPair } from '../../src/models/account';
+import { Block, BlockHeader } from '../../src/models/block';
 //console.log = jest.fn();
 
 describe('', () => {
@@ -125,9 +126,98 @@ describe('', () => {
         });
     });
     describe('マイニング', () => {
-        it('トランザクションからブロック作成', () => {
+        describe('ブロック管理', () => {
+            it('ブロック作成', () => {
+                let block = new Block();
+                expect(block instanceof Block).toEqual(true);
+            });
+            it('ブロックにトランザクションを追加', () => {
+                let transaction = new Transaction(
+                    1,
+                    -0.5,
+                    'from',
+                    'to',
+                );
+                let block = new Block();
+                expect(block instanceof Block).toEqual(true);
+                block.addTransaction(transaction);
+                expect(block.getTransactions()).toEqual([transaction]);
+            });
+            it('ブロックに複数のトランザクションを追加', () => {
+                let transaction1 = new Transaction(
+                    1,
+                    -0.5,
+                    'from',
+                    'to',
+                );
+                let transaction2 = new Transaction(
+                    2,
+                    -0.5,
+                    'from',
+                    'to',
+                );
+                let block = new Block();
+                block.addTransaction(transaction1);
+                block.addTransaction(transaction2);
+                expect(block.getTransactions()).toEqual([
+                    transaction1,
+                    transaction2
+                ]);
+            });
         });
-        it('マイニング(PoW)', () => {
+        describe('マイニング(PoW)', () => {
+            let transaction1: Transaction;
+            let transaction2: Transaction;
+            let block: Block;
+            beforeEach(() => {
+                transaction1 = new Transaction(
+                    1,
+                    -0.5,
+                    'from',
+                    'to',
+                );
+                transaction2 = new Transaction(
+                    2,
+                    -0.5,
+                    'from',
+                    'to',
+                );
+                block = new Block();
+                block.addTransaction(transaction1);
+                block.addTransaction(transaction2);
+            });
+            it('ブロックヘッダの作成', () => {
+                let blockHeader = new BlockHeader();
+                expect(blockHeader instanceof BlockHeader).toEqual(true);
+            });
+            it('ブロックヘッダの内容取得', () => {
+                let blockHeader = new BlockHeader(
+                    1,
+                    'prev block hash',
+                    'merkle root hash',
+                    2,
+                    3,
+                    4
+                );
+                expect(blockHeader instanceof BlockHeader).toEqual(true);
+                expect(blockHeader.getData()).toEqual({
+                    version: 1,
+                    prevBlockHash: 'prev block hash',
+                    merkleRootHash: 'merkle root hash',
+                    time: 2,
+                    difficultyTarget: 3,
+                    nonce: 4,
+                });
+            });
+            it('ブロックのマークル木のルートを計算', () => {
+                expect(block.getMerkleRoot()).toEqual('block merkle root');
+            });
+            it('ブロックのシリアライズ', () => {
+                expect(block.getSerializedData()).toEqual('serialized block data');
+            });
+            it('ブロックのハッシュ値取得', () => {
+                expect(block.getHash()).toEqual('d7ce8829722f8497980c24d8d1d8f4354f6f738a0637762a4509a0548e5a9180');
+            });
         });
     });
     describe('ブロックチェーンに取り込み', () => {
