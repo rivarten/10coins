@@ -1,4 +1,9 @@
-import { Transaction } from '../../src/models/transaction';
+import {
+    Transaction,
+    TransactionOutputElem,
+    TransactionInputElemNonCoinBase,
+    TransactionInputElemCoinBase,
+} from '../../src/models/transaction';
 import { Account, CryptoKeys, KeyPair } from '../../src/models/account';
 import { Block, BlockHeader } from '../../src/models/block';
 //console.log = jest.fn();
@@ -12,9 +17,7 @@ describe('', () => {
         it('トランザクションを生成', () => {
             let transactionA = new Transaction(
                 1,
-                -0.5,
-                'from',
-                'to',
+                2,
             );
             expect(transactionA instanceof Transaction).toEqual(true);
             let transactionB = new Transaction();
@@ -23,22 +26,116 @@ describe('', () => {
         it('トランザクションの内容を取得', () => {
             let transactionA = new Transaction(
                 1,
-                -0.5,
-                'from',
-                'to',
+                2,
             );
             expect(transactionA.get()).toEqual({
-                amount: 1,
-                fee: -0.5,
-                from: 'from',
-                to: 'to',
+                version: 1,
+                locktime: 2,
+                txIn: [],
+                txOut: [],
             });
             let transactionB = new Transaction();
             expect(transactionB.get()).toEqual({
-                amount: 0,
-                fee: 0,
-                from: '',
-                to: '',
+                version: 1,
+                locktime: 0,
+                txIn: [],
+                txOut: [],
+            });
+        });
+        it('トランザクションのアウトプット要素生成', () => {
+            let transactionOutElem = new TransactionOutputElem();
+            expect(transactionOutElem instanceof TransactionOutputElem).toEqual(true);
+        });
+        it('トランザクションのアウトプット要素生成・取得', () => {
+            const scriptPubKey = 'script pub key';
+            let transactionOutElem = new TransactionOutputElem(
+                1,
+                scriptPubKey.length,
+                scriptPubKey,
+            );
+            expect(transactionOutElem instanceof TransactionOutputElem).toEqual(true);
+            expect(transactionOutElem.getData()).toEqual({
+                value: 1,
+                scriptPubKeyBytes: scriptPubKey.length,
+                scriptPubKey: scriptPubKey,
+            });
+        });
+        it('トランザクションのインプット要素生成', () => {
+            let transactionInElem = new TransactionInputElemNonCoinBase();
+            expect(transactionInElem instanceof TransactionInputElemNonCoinBase).toEqual(true);
+        });
+        it('トランザクションのインプット要素生成・取得', () => {
+            const scriptSig = 'script sig';
+            let transactionInElem = new TransactionInputElemNonCoinBase(
+                'hash',
+                1,
+                scriptSig.length,
+                scriptSig,
+                2
+            );
+            expect(transactionInElem instanceof TransactionInputElemNonCoinBase).toEqual(true);
+            expect(transactionInElem.getData()).toEqual({
+                hash: 'hash',
+                index: 1,
+                scriptBytes: scriptSig.length,
+                scriptSig: scriptSig,
+                sequence: 2,
+            });
+        });
+        it('トランザクションのインプット要素生成(コインベース', () => {
+            let transactionInElem = new TransactionInputElemCoinBase();
+            expect(transactionInElem instanceof TransactionInputElemCoinBase).toEqual(true);
+        });
+        it('トランザクションのインプット要素生成・取得(コインベース', () => {
+            const coinbaseData = 'coinbase data';
+            let transactionInElem = new TransactionInputElemCoinBase(
+                1,
+                coinbaseData.length,
+                coinbaseData,
+                2
+            );
+            expect(transactionInElem instanceof TransactionInputElemCoinBase).toEqual(true);
+            expect(transactionInElem.getData()).toEqual({
+                hash: '',
+                index: 1,
+                coinbaseDataBytes: coinbaseData.length,
+                coinbaseData: coinbaseData,
+                sequence: 2,
+            });
+        });
+        xit('トランザクションのインプット要素追加(非コインベース', () => {
+        });
+        it('トランザクションのインプット要素追加(コインベース', () => {
+            const coinbaseData = 'coinbase data';
+            let transactionInElem = new TransactionInputElemCoinBase(
+                1,
+                coinbaseData.length,
+                coinbaseData,
+                2
+            );
+            let transaction = new Transaction();
+            transaction.addTransactionIn(transactionInElem);
+            expect(transaction.get()).toEqual({
+                version: 1,
+                locktime: 0,
+                txIn: [transactionInElem],
+                txOut: [],
+            });
+        });
+        it('トランザクションのアウトプット要素追加', () => {
+            const scriptPubKey = 'script pub key';
+            let transactionOutElem = new TransactionOutputElem(
+                1,
+                scriptPubKey.length,
+                scriptPubKey,
+            );
+            let transaction = new Transaction();
+            transaction.addTransactionOut(transactionOutElem);
+            expect(transaction.get()).toEqual({
+                version: 1,
+                locktime: 0,
+                txIn: [],
+                txOut: [transactionOutElem],
             });
         });
     });
@@ -132,30 +229,15 @@ describe('', () => {
                 expect(block instanceof Block).toEqual(true);
             });
             it('ブロックにトランザクションを追加', () => {
-                let transaction = new Transaction(
-                    1,
-                    -0.5,
-                    'from',
-                    'to',
-                );
+                let transaction = new Transaction();
                 let block = new Block();
                 expect(block instanceof Block).toEqual(true);
                 block.addTransaction(transaction);
                 expect(block.getTransactions()).toEqual([transaction]);
             });
             it('ブロックに複数のトランザクションを追加', () => {
-                let transaction1 = new Transaction(
-                    1,
-                    -0.5,
-                    'from',
-                    'to',
-                );
-                let transaction2 = new Transaction(
-                    2,
-                    -0.5,
-                    'from',
-                    'to',
-                );
+                let transaction1 = new Transaction();
+                let transaction2 = new Transaction();
                 let block = new Block();
                 block.addTransaction(transaction1);
                 block.addTransaction(transaction2);
@@ -170,18 +252,8 @@ describe('', () => {
             let transaction2: Transaction;
             let block: Block;
             beforeEach(() => {
-                transaction1 = new Transaction(
-                    1,
-                    -0.5,
-                    'from',
-                    'to',
-                );
-                transaction2 = new Transaction(
-                    2,
-                    -0.5,
-                    'from',
-                    'to',
-                );
+                transaction1 = new Transaction();
+                transaction2 = new Transaction();
                 block = new Block();
                 block.addTransaction(transaction1);
                 block.addTransaction(transaction2);
