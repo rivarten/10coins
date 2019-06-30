@@ -9,26 +9,35 @@ describe('', () => {
     });
     describe('トランザクションを生成', () => {
         it('トランザクションを生成', () => {
-            let transaction = new Transaction(
+            let transactionA = new Transaction(
                 1,
                 -0.5,
                 'from',
                 'to',
             );
-            expect(transaction instanceof Transaction).toEqual(true);
+            expect(transactionA instanceof Transaction).toEqual(true);
+            let transactionB = new Transaction();
+            expect(transactionB instanceof Transaction).toEqual(true);
         });
         it('トランザクションの内容を取得', () => {
-            let transaction = new Transaction(
+            let transactionA = new Transaction(
                 1,
                 -0.5,
                 'from',
                 'to',
             );
-            expect(transaction.get()).toEqual({
+            expect(transactionA.get()).toEqual({
                 amount: 1,
                 fee: -0.5,
                 from: 'from',
                 to: 'to',
+            });
+            let transactionB = new Transaction();
+            expect(transactionB.get()).toEqual({
+                amount: 0,
+                fee: 0,
+                from: '',
+                to: '',
             });
         });
     });

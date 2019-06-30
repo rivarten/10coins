@@ -3,7 +3,12 @@ export class Transaction {
     private fee: number;
     private from: string;
     private to: string;
-    constructor(amount: number, fee: number, from: string, to: string) {
+    constructor(
+        amount: number = 0,
+        fee: number = 0,
+        from: string = '',
+        to: string = '',
+    ) {
         this.amount = amount;
         this.fee = fee;
         this.from = from;
