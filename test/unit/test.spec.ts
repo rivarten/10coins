@@ -158,6 +158,7 @@ describe('', () => {
             });
             it('自分のアカウントのアドレスを設定', () => {
                 const myKeyPair = new KeyPair();
+                myKeyPair.generateKeys();
                 let myAccount = new Account(myKeyPair);
                 expect(myAccount instanceof Account).toEqual(true);
                 expect(myAccount.getAddress()).toEqual(myAccount.convertToAddressFromKeyPair(myKeyPair));

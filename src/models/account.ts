@@ -1,12 +1,13 @@
 import * as crypto from 'crypto';
+import * as secp256k1 from 'secp256k1';
 
 export interface CryptoKeys {
-    publicKey: string;
-    privateKey: string;
+    publicKey: Buffer;
+    privateKey: Buffer;
 }
 const CryptoKeysDefault: CryptoKeys = {
-    publicKey: '',
-    privateKey: '',
+    publicKey: Buffer.from(''),
+    privateKey: Buffer.from(''),
 };
 export interface KeyPairInterface {
     generateKeys(): CryptoKeys;
@@ -14,17 +15,19 @@ export interface KeyPairInterface {
 }
 export class KeyPair implements KeyPairInterface {
     private keys: CryptoKeys = CryptoKeysDefault;
-    readonly ecdhType: string = 'secp256k1';
     constructor() {
     }
     generateKeys(): CryptoKeys {
-        const ecdh = crypto.createECDH(this.ecdhType);
-        ecdh.generateKeys();
-        const publicKey = ecdh.getPublicKey('hex');
-        const privateKey = ecdh.getPrivateKey('hex');
+        let privKey;
+        do {
+            privKey = crypto.randomBytes(32);
+        } while (!secp256k1.privateKeyVerify(privKey));
+        const publicKey = secp256k1.publicKeyCreate(privKey);
+        const privateKey = privKey;
+
         this.keys = {
-            publicKey,
-            privateKey,
+            publicKey: publicKey,
+            privateKey: privateKey,
         };
         return this.keys;
     }
@@ -40,7 +43,7 @@ export class Account {
     convertToAddressFromKeyPair(keyPair: KeyPair): string {
         const sha256 = crypto.createHash('sha256');
         sha256.setEncoding('hex');
-        sha256.write(keyPair.getKeys().publicKey);
+        sha256.write(keyPair.getKeys().publicKey.toString('hex'));
         sha256.end();
         return sha256.read().toString();
     }
@@ -48,6 +51,7 @@ export class Account {
         if (!keyPair) {
             this.address = this.getNewAddress();
         } else {
+            this.keys = keyPair;
             this.address = this.convertToAddressFromKeyPair(keyPair);
         }
     }
