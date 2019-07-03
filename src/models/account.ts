@@ -63,4 +63,7 @@ export class Account {
     getAddress(): string {
         return this.address;
     }
+    get getKeyPair(): KeyPair {
+        return this.keys;
+    }
 }

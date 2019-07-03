@@ -1,11 +1,15 @@
+import * as crypto from 'crypto';
+
 import {
     Transaction,
     TransactionOutputElem,
     TransactionInputElemNonCoinBase,
     TransactionInputElemCoinBase,
+    Script,
 } from '../../src/models/transaction';
 import { Account, CryptoKeys, KeyPair } from '../../src/models/account';
 import { Block, BlockHeader } from '../../src/models/block';
+
 //console.log = jest.fn();
 
 describe('', () => {
@@ -220,6 +224,74 @@ describe('', () => {
             xit('ノードシャットダウン時にメモリプールのトランザクションをディスクに保存', () => {
             });
             xit('ノード起動時にディスクに保存されているトランザクションをメモリプールに復元', () => {
+            });
+        });
+        describe('トランザクションスクリプト: P2PKH', () => {
+            //ScriptPubKey: 本当は, OP_DUP OP_HASH160 <PublicKey Hash A>  OP_EQUALVERIFY OP_CHECKSIG
+            //              ここでは, OP_DUP OP_HASH256 <PublicKey Hash A>  OP_EQUALVERIFY OP_CHECKSIG
+            //
+            //ScriptSig: <Signature A> <PublicKey A>
+            it('ScriptPubKey(locking script)を作成', () => {
+                const myKeyPair = new KeyPair();
+                myKeyPair.generateKeys();
+                let myAccount = new Account(myKeyPair);
+
+                const pubKeyA = myKeyPair.getKeys().publicKey.toString('hex');
+                const sha256 = crypto.createHash('sha256');
+                sha256.setEncoding('hex');
+                sha256.write(pubKeyA);
+                sha256.end();
+                const pubKeyHashA = sha256.read().toString();
+
+                let script = new Script(myAccount);
+                expect(script instanceof Script).toEqual(true);
+                expect(script.getScriptPubKey()).toEqual(
+                    `OP_DUP OP_HASH256 ${pubKeyHashA} OP_EQUALVERIFY OP_CHECKSIG`
+                );
+            });
+            it('ScriptSig(unlocking script)を作成', () => {
+                const myKeyPair = new KeyPair();
+                myKeyPair.generateKeys();
+                let myAccount = new Account(myKeyPair);
+
+                let script = new Script(myAccount);
+                expect(script instanceof Script).toEqual(true);
+
+                //トランザクション作成
+                let transaction = new Transaction();
+                    //In: コインベース
+                const coinbaseData = 'coinbase data';
+                let transactionInElem = new TransactionInputElemCoinBase(
+                    1,
+                    coinbaseData.length,
+                    coinbaseData,
+                    2
+                );
+                transaction.addTransactionIn(transactionInElem);
+                    //Out:
+                const scriptPubKey = script.getScriptPubKey();
+                let transactionOutElem = new TransactionOutputElem(
+                    1,
+                    scriptPubKey.length,
+                    scriptPubKey,
+                );
+                transaction.addTransactionOut(transactionOutElem);
+
+                //
+                const scriptSig = script.getScriptSig(transaction);
+                expect(typeof scriptSig).toEqual('string');
+            });
+            it('トランザクションスクリプトの実行', () => {
+            });
+        });
+        describe('トランザクションの検証', () => {
+            it('受信したトランザクションに含まれるInputからUTXOを特定', () => {
+            });
+            it('UTXOからScriptPubKeyを取り出す', () => {
+            });
+            it('InputからScriptSigを取り出す', () => {
+            });
+            it('ScriptSig+ScriptPubKeyを実行して検証', () => {
             });
         });
     });
