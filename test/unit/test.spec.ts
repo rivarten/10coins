@@ -5,7 +5,7 @@ import {
     TransactionOutputElem,
     TransactionInputElemNonCoinBase,
     TransactionInputElemCoinBase,
-    Script,
+    Script_P2PKH,
 } from '../../src/models/transaction';
 import { Account, CryptoKeys, KeyPair } from '../../src/models/account';
 import { Block, BlockHeader } from '../../src/models/block';
@@ -243,8 +243,8 @@ describe('', () => {
                 sha256.end();
                 const pubKeyHashA = sha256.read().toString();
 
-                let script = new Script(myAccount);
-                expect(script instanceof Script).toEqual(true);
+                let script = new Script_P2PKH(myAccount);
+                expect(script instanceof Script_P2PKH).toEqual(true);
                 expect(script.getScriptPubKey()).toEqual(
                     Buffer.from(`OP_DUP OP_HASH256 ${pubKeyHashA} OP_EQUALVERIFY OP_CHECKSIG`)
                 );
@@ -254,8 +254,8 @@ describe('', () => {
                 myKeyPair.generateKeys();
                 let myAccount = new Account(myKeyPair);
 
-                let script = new Script(myAccount);
-                expect(script instanceof Script).toEqual(true);
+                let script = new Script_P2PKH(myAccount);
+                expect(script instanceof Script_P2PKH).toEqual(true);
 
                 //トランザクション作成
                 let transaction = new Transaction();
@@ -286,8 +286,8 @@ describe('', () => {
                 myKeyPair.generateKeys();
                 let myAccount = new Account(myKeyPair);
 
-                let script = new Script(myAccount);
-                expect(script instanceof Script).toEqual(true);
+                let script = new Script_P2PKH(myAccount);
+                expect(script instanceof Script_P2PKH).toEqual(true);
 
                 //トランザクション作成
                 let transaction = new Transaction();

@@ -114,7 +114,12 @@ export class Transaction {
         this.txOut.push(output);
     }
 }
-export class Script {
+export interface Script {
+    getScriptPubKey(): Buffer;
+    getScriptSig(transaction: Transaction): Buffer;
+    run(transaction: Transaction, scriptSig: Buffer, scriptPubKey: Buffer): Boolean;
+}
+export class Script_P2PKH implements Script {
     protected scriptPubKey: string = '';
     protected scriptSig: string = '';
     protected account: Account;
