@@ -246,7 +246,7 @@ describe('', () => {
                 let script = new Script(myAccount);
                 expect(script instanceof Script).toEqual(true);
                 expect(script.getScriptPubKey()).toEqual(
-                    `OP_DUP OP_HASH256 ${pubKeyHashA} OP_EQUALVERIFY OP_CHECKSIG`
+                    Buffer.from(`OP_DUP OP_HASH256 ${pubKeyHashA} OP_EQUALVERIFY OP_CHECKSIG`)
                 );
             });
             it('ScriptSig(unlocking script)を作成', () => {
@@ -272,16 +272,48 @@ describe('', () => {
                 const scriptPubKey = script.getScriptPubKey();
                 let transactionOutElem = new TransactionOutputElem(
                     1,
-                    scriptPubKey.length,
-                    scriptPubKey,
+                    scriptPubKey.toString().length,
+                    scriptPubKey.toString(),
                 );
                 transaction.addTransactionOut(transactionOutElem);
 
                 //
                 const scriptSig = script.getScriptSig(transaction);
-                expect(typeof scriptSig).toEqual('string');
+                expect(typeof scriptSig).toEqual('object');
             });
             it('トランザクションスクリプトの実行', () => {
+                const myKeyPair = new KeyPair();
+                myKeyPair.generateKeys();
+                let myAccount = new Account(myKeyPair);
+
+                let script = new Script(myAccount);
+                expect(script instanceof Script).toEqual(true);
+
+                //トランザクション作成
+                let transaction = new Transaction();
+                    //In: コインベース
+                const coinbaseData = 'coinbase data';
+                let transactionInElem = new TransactionInputElemCoinBase(
+                    1,
+                    coinbaseData.length,
+                    coinbaseData,
+                    2
+                );
+                transaction.addTransactionIn(transactionInElem);
+                    //Out:
+                const scriptPubKey = script.getScriptPubKey();
+                let transactionOutElem = new TransactionOutputElem(
+                    1,
+                    scriptPubKey.toString().length,
+                    scriptPubKey.toString(),
+                );
+                transaction.addTransactionOut(transactionOutElem);
+
+                //
+                const scriptSig = script.getScriptSig(transaction);
+                //
+                const result = script.run(transaction, scriptSig, scriptPubKey);
+                expect(result).toEqual(true);
             });
         });
         xdescribe('トランザクションの検証', () => {
