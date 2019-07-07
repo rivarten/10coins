@@ -168,7 +168,7 @@ describe('', () => {
                 expect(myAccount.getAddress()).toEqual(myAccount.convertToAddressFromKeyPair(myKeyPair));
             });
         });
-        describe('ノード管理', () => {
+        xdescribe('ノード管理', () => {
             describe('初期接続確立', () => {
                 it('DNSシードに問い合わせ', () => {
                 });
@@ -212,7 +212,7 @@ describe('', () => {
                 });
             });
         });
-        describe('トランザクションのブロードキャスト', () => {
+        xdescribe('トランザクションのブロードキャスト', () => {
             it('inv送信', () => {
             });
             it('getdata返信', () => {
@@ -284,7 +284,7 @@ describe('', () => {
             it('トランザクションスクリプトの実行', () => {
             });
         });
-        describe('トランザクションの検証', () => {
+        xdescribe('トランザクションの検証', () => {
             it('受信したトランザクションに含まれるInputからUTXOを特定', () => {
             });
             it('UTXOからScriptPubKeyを取り出す', () => {
@@ -295,7 +295,7 @@ describe('', () => {
             });
         });
     });
-    describe('マイニング', () => {
+    xdescribe('マイニング', () => {
         describe('ブロック管理', () => {
             it('ブロック作成', () => {
                 let block = new Block();
@@ -365,7 +365,7 @@ describe('', () => {
             });
         });
     });
-    describe('ブロックチェーンに取り込み', () => {
+    xdescribe('ブロックチェーンに取り込み', () => {
         describe('blockのpush', () => {
         });
         describe('ブロックリレー', () => {
@@ -381,6 +381,12 @@ describe('', () => {
             });
             it('追加後、接続中のノードにinv送信', () => {
             });
+        });
+    });
+    xdescribe('ウォレット', () => {
+        describe('ウォレット残高確認', () => {
+        });
+        describe('送金', () => {
         });
     });
 });
